@@ -43,8 +43,6 @@ class Client:
 
         return True
 
-
-
     # ------------------------------------------------------------------------
     # FONCTION UTILISEES PENDANT LE JEU
     # ------------------------------------------------------------------------
@@ -56,10 +54,6 @@ class Client:
         time.sleep(2)
         # Renvoi une matrice contenant les cases du jeu.
         return matriceVide
-
-
-
-
 
     # return 0 si s'est bien passé
     # Code erreur  1:, 2:obstacle mur, 3:sortie de terrain, 10:mauvais input
