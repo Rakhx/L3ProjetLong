@@ -1,5 +1,5 @@
-from Model.Game.EnumCase import EnumOrientation
-from Model.Game.items.Item import Item
+from Allin.Model.Game.EnumCase import EnumOrientation
+from Allin.Model.Game.items.Item import Item
 
 
 class Wall(Item):

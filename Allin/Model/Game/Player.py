@@ -1,6 +1,3 @@
-from Model.Game.EnumCase import EnumPlayer, EnumPion
-
-
 class Player:
     def __init__(self, enumJoueur ,nom, pion):
         self.walls = []

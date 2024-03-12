@@ -1,6 +1,4 @@
-import numpy as np
-
-from Exception.Exceptions import CaseOccupedException, CaseEmptyException
+from Allin.Exception.Exceptions import CaseOccupedException, CaseEmptyException
 
 
 class plateau :

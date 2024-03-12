@@ -1,14 +1,10 @@
 from threading import Lock
-from flask import Flask, request, jsonify
-from flask_restful import Api, Resource, reqparse
-import tkinter as tk
-from tkinter import *
+from flask import Flask, request
 from threading import Thread
-import Model.Config as cg
-from Model.Game.EnumCase import EnumPlayer
-from Model.Game.Game import Game
-from Vue.ThreaderView import ThreadedView
-
+from Allin.Model.Config import *
+from Allin.Model.Game.EnumCase import EnumPlayer
+from Allin.Model.Game.Game import Game
+from Allin.Vue.ThreaderView import ThreadedView
 
 def display_labyrinth(var):
     view = ThreadedView()
@@ -20,15 +16,17 @@ data_lock = Lock()
 #   Element autre de la classe
 # --------------------------------------
 
-app = Flask("hum")
+app = Flask(__name__)
 moteur = Game()
 lock = Lock()
+
 
 land = ["--------------------\n->------------------\n->------------------\n"]
 teamWithPrio = EnumPlayer.joueur1
 T = Thread(target=display_labyrinth, args=(land,))
-if(cg.viewGui):
+if(viewGui):
     T.start()
+
 
 def modifyValue(representation):
     with data_lock:
@@ -51,7 +49,7 @@ def convertToString(value):
 def registerTeam():
     arg = request.args.to_dict()
     message = moteur.addPlayer(arg["team"],int(arg["pion"]))
-    if cg.debug :
+    if debug :
         print("register Team ", arg["name"], "de type: " , arg["pion"], " avec un retour ", message)
 
     return message
@@ -64,7 +62,7 @@ def registerTeam():
 # Unités disponibles pour préparation
 @app.route("/init/units")
 def getAvailableUnit():
-    return moteur.getStartUnite()
+    return "ughfj"
 
 
 
@@ -101,7 +99,7 @@ def getPriority():
     param = request.args.to_dict()
     lock.acquire()
     teamWithPrio = param["team"]
-    if cg.debug :
+    if debug :
         print("equipe " + param["team"] + " prend la priorite")
     # TODO checker ici
     representation = moteur.displayLand()
@@ -113,7 +111,7 @@ def getPriority():
 def releasePriority():
     try :
         lock.release()
-        if cg.debug:
+        if debug:
             print("equipe ", teamWithPrio," release la priorite")
         return str(True)
     except RuntimeError :

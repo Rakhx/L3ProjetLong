@@ -1,13 +1,12 @@
 import json
 import time
 import requests
-import typing
 from typing import List
-import Model.Config as cf
+import Allin.Model.Config as cf
 class Client:
 
     def __init__(self, teamName:str):
-        self._name =teamName
+        self._name = teamName
 
         # # Position de départ
         # r = requests.get("http://127.0.0.1:5000/init/register/" + teamName)

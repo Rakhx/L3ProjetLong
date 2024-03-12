@@ -1,8 +1,7 @@
-import typing
 from typing import List
 
-from Model.Game.EnumCase import EnumPion, EnumPlayer
-from Model.Game.Player import Player
+from Allin.Model.Game.EnumCase import EnumPion, EnumPlayer
+from Allin.Model.Game.Player import Player
 
 
 # Classe de moteur de jeu
