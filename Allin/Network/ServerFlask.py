@@ -1,10 +1,14 @@
+import json
 from threading import Lock
 from flask import Flask, request
 from threading import Thread
+from flask import Flask, jsonify, request
+from flask_restful import Api, Resource, reqparse
+
 
 from Allin.Model.Config import viewGui, debug
-from Allin.Model.Game.EnumCase import EnumPlayer
-from Allin.Game import Game
+from Allin.Model.Game.EnumCase import EnumPlayer, EnumWall
+from Allin.Model.Game.Game import Game
 
 from Allin.Vue.ThreaderView import ThreadedView
 
@@ -23,6 +27,9 @@ app = Flask(__name__)
 moteur = Game()
 lock = Lock()
 
+parser = reqparse.RequestParser()
+parser.add_argument('list', type=list)
+
 
 land = ["--------------------\n->------------------\n->------------------\n"]
 teamWithPrio = EnumPlayer.joueur1
@@ -30,12 +37,10 @@ T = Thread(target=display_labyrinth, args=(land,))
 if(viewGui):
     T.start()
 
-
 def modifyValue(representation):
     with data_lock:
         global land
         land[0] = representation
-
 def seeValue():
      with data_lock:
          print(land[0])
@@ -44,58 +49,74 @@ def convertToString(value):
     return [tuple(str(x) for x in value)]
 
 # --------------------------------------
-#   Initialisation de début de game
+#   region Initialisation de début de game
 # --------------------------------------
 
 # Register le nom de la team, ainsi que le type de pion choisi
-@app.route("/init/register", methods=['GET'])
+@app.route("/init/registerTeam", methods=['GET'])
 def registerTeam():
     arg = request.args.to_dict()
     message = moteur.addPlayer(arg["team"],int(arg["pion"]))
     if debug :
-        print("register Team ", arg["name"], "de type: " , arg["pion"], " avec un retour ", message)
-
+        print("register Team ", arg["team"], "de type: " , arg["pion"], " avec un retour ", message)
     return message
 
-# # Taille du terrain
-# @app.route("/init/land")
-# def getTailleTerrain():
-#     return [tuple(str(x) for x in moteur.getTailleMap())]
+@app.route("init/askSpawnChoice")
+def askSpawnChoice():
 
-# Unités disponibles pour préparation
-@app.route("/init/units")
-def getAvailableUnit():
-    return "ughfj"
+    None
 
+@app.route("init/askWallsChoice")
+def askWallsChoice():
+    None
 
+# Register le nom de la team, ainsi que le type de pion choisi
+@app.route("/init/registerWalls", methods=['GET'])
+def registerWalls():
+    arg = request.args.to_dict()
+    player = arg["team"]
+    wallz = json.loads(arg["walls"])
+    mursCorrect = {}
+    # res = ""
+    # Le json a converti en char
+    for k,v in wallz.items():
+        mursCorrect[int(k)] = int(v)
+        # if debug :
+        #     res += "quantite de mur "+ str(EnumWall(int(k))) + " : " + str(v) + "\n"
 
-@app.route('/user/<username>')
-def profile(username):
-    return f'{username}\'s profile'
+    return moteur.initWallsList(player, mursCorrect)
+# endregion
 
 # --------------------------------------
 #   Boucle en cours de  game
 # --------------------------------------
 
-# regarde autour
-@app.route('/loop/lookAround', methods=['GET'])
-def regarderAutour():
-    param =  request.args.to_dict()
-    # return [tuple(str(x) for x in moteur.regardeAutour(param["team"],param["unitName"]))]
-    return moteur.regardeAutour(param["team"],param["unitName"])
-
 @app.route('/loop/move', methods=['GET'])
 def deplacementUnite():
     param = request.args.to_dict()
-    return moteur.deplacementUnite(param["team"],param["unitName"], (int(param["posX"]), int(param["posY"])))
+    return moteur.deplacementUnite(param["team"], (int(param["posX"]), int(param["posY"])))
 
-@app.route('/loop/shoot', methods=['GET'])
-def tirer():
+@app.route('/loop/placeWalls', methods=['GET'])
+def placerMur():
     param = request.args.to_dict()
-    return moteur.shoot(param["team"], param["unitName"], (int(param["posX"]), int(param["posY"])))
+    team = param["team"]
+    pos = (param["posX"], param["posY"])
+    orientation = param["orientation"]
+    # On vérifie si le joueur possede tjrs ce type de mur
+
+    # on vérifie que la case est disponible pour mettre le mur
+
+    # on vérifie que l'orientation du mur ne le fait pas rentrer en intersection avec un autre
+
+@app.route('/loop/usePower', methods=['GET'])
+def usePower():
+    param = request.args.to_dict()
+    team = param["team"]
+    pos = (param["posX"], param["posY"])
+
 
 # --------------------------------------
-# Mutex stuff
+# region Mutex stuff
 # --------------------------------------
 @app.route('/loop/askPrio', methods=['GET'])
 def getPriority():
@@ -105,10 +126,11 @@ def getPriority():
     if debug :
         print("equipe " + param["team"] + " prend la priorite")
     # TODO checker ici
-    representation = moteur.displayLand()
+    representation = moteur.getBoardState()
     modifyValue(representation)
     seeValue()
-    return moteur.sumupSituation(param["team"])
+    # Reload des pouvoirs
+    return representation
 
 @app.route('/loop/releasePrio')
 def releasePriority():
@@ -120,3 +142,4 @@ def releasePriority():
     except RuntimeError :
         return "Release quelque chose de déjà release"
 
+# endregion

@@ -4,6 +4,7 @@ from enum import Enum, auto
 class EnumCase(Enum):
     pionVide = auto()
     murVide = auto()
+    caseUseless = auto()
     pionJ1 = auto()
     pionJ2 = auto()
     classiqueJ1 = auto()
@@ -17,7 +18,6 @@ class EnumCase(Enum):
     solideJ1 = auto()
     solideJ2 = auto()
 
-
     def fromEnumToChar(self):
         print(self.name)
 
@@ -29,6 +29,8 @@ class EnumCase(Enum):
             return 'c0'
         if self.name == EnumCase.murVide.name:
             return 'm0'
+        if self.name == EnumCase.caseUseless.name:
+            return 'u0'
         if self.name == EnumCase.pionJ1.name:
             return 'p1'
         if self.name == EnumCase.pionJ2.name:
@@ -60,7 +62,6 @@ class EnumOrientation(Enum):
     bas = 2
     gauche = 3
 
-
 class EnumPlayer(Enum):
     joueur1 = 0
     joueur2 = 1
@@ -69,3 +70,14 @@ class EnumPion(Enum):
     sappeur = 0
     jumper = 1
     sprinter = 2
+
+class EnumWall(Enum):
+    classic = 0
+    solid = 1
+    long = 2
+    door = 3
+
+class EnumTypeCase(Enum):
+    forSpawn = auto()
+    forWall = auto()
+    forNothing = auto()

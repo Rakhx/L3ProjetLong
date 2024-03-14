@@ -11,10 +11,10 @@ nbrPointAchatMur = 15
 
 # LES MURS
 # Voir document Excel
-# 0 Classic 1 Solid 2 Long 3 Door 4 Tempory
+# 0 Classic 1 Solid 2 Long 3 Door
 
 #couple type de mur et cout de ce mur
-murEtCout = {0:1,1:2,2:3,3:3,4:1}
+murEtCout = {0:1,1:2,2:3,3:3}
 
 # Classe qui va permettre la communication avec le serveur.
 # Version non fonctionnelle du client, uniquement la pour que vous puissiez le prendre en considération
