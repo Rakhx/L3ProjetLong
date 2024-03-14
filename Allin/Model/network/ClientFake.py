@@ -33,7 +33,7 @@ class Client:
     # choisi un ensemble de mur pour commencer la partie
     # error 0:trop cher en point
     # Version locale de ce qui se fera sur le serveur
-    def choixMur(self,joueur : str , murs:List[int]):
+    def choixMur(self,joueur : str , murs:Dict[int,int]):
         totalCout = 0
         try :
             for mur in murs :
