@@ -21,22 +21,22 @@ class Player:
         self.walls = murs
 
     def useWall(self, enumWallToUse):
-        wallAsNumber = enumWallToUse.value
+
         try :
-            nbWallAvailable = self.walls[wallAsNumber]
+            nbWallAvailable = self.walls[enumWallToUse]
             if(nbWallAvailable == 1):
-                del self.walls[wallAsNumber]
+                del self.walls[enumWallToUse]
             else :
                 nbWall = nbWallAvailable - 1
-                self.walls[wallAsNumber] = nbWall
+                self.walls[enumWallToUse] = nbWall
 
-        except :
-            print("probleme usewall")
+        except BaseException as e:
+            print("probleme usewall", repr(e))
 
 
     # utilise une instance d'un mur donné
     def isWallAvailable(self, enumWalLToCheck):
-        if enumWalLToCheck.value in self.walls :
+        if enumWalLToCheck in self.walls :
             # self.walls.remove(murUtilise)
             return True
         else :

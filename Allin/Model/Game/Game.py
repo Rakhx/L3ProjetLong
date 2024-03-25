@@ -106,13 +106,13 @@ class Game :
 
 
         except WallDisponibilityException:
-            print("ERREUR BEBE")
+            print("WallDisponibilityException BEBE")
         except CaseWrongTypeException:
-            print("ERREUR BEBE")
+            print("CaseWrongTypeException BEBE")
         except CaseOccupedException:
-            print("ERREUR BEBE")
+            print("CaseOccupedException BEBE")
         except WallIntersectionException:
-            print("ERREUR BEBE")
+            print("WallIntersectionException BEBE")
 
 
         print(player.walls)
@@ -131,8 +131,8 @@ walls1 = {0:2,1:1,2:1,3:1}
 walls2 = {0:1,1:1,2:1,3:1}
 print(gamou.initWallsList("zozo", walls1))
 gamou.placerMur(EnumWall.classic,(1,1),EnumOrientation.droite,"zozo")
-# gamou.placerMur(EnumWall.classic,(2,1),EnumOrientation.droite,"zozo")
-# gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
+gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
+gamou.placerMur(EnumWall.classic,(5,1),EnumOrientation.droite,"zozo")
 
 
 # gamou.initWallsList("zinzin", walls2)
