@@ -6,17 +6,15 @@ from Allin.Model.Game.items.Spawn import Spawn
 
 
 class Player:
-    def __init__(self, enumJoueur, nom:str, pion):
-        self.walls = []
+    def __init__(self, enumJoueur, nom:str, enumPion):
+        self.walls = {}
         self.name = nom
         self.player = enumJoueur
-        # pas sur de vouloir cette info ici
+
         # deux positions possible pour le pions
-        pos1 = (0, (cf.taillePlateau-1) / 2 )
-        pos2 = (cf.taillePlateau*2-1 , (cf.taillePlateau-1) / 2 )
-        pos = (cf.taillePlateau*2-1 * enumJoueur.value , (cf.taillePlateau-1) / 2 )
+        pos = ( (cf.taillePlateau-1)*2 * (enumJoueur.value-1) , (cf.taillePlateau-1) )
         self.positionPion = pos
-        self.spawn = Spawn(pos, enumJoueur, pion)
+        self.spawn = Spawn(pos, enumJoueur, enumPion)
 
 
     def setWalls(self, murs):

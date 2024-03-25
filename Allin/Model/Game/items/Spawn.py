@@ -2,7 +2,7 @@ from Allin.Model.Game.EnumCase import EnumPlayer, EnumPion
 from Allin.Model.Game.items.Item import Item
 import Allin.Model.Config as cg
 class Spawn(Item):
-    def __init__(self,pos, owner, typeAsEnum):
+    def __init__(self, pos, owner, typeAsEnum):
         super().__init__(pos)
         self.owner = owner
         self.number = 1 if owner == EnumPlayer.joueur1 else 2
@@ -26,3 +26,5 @@ class Spawn(Item):
 
     def __str__(self):
         return self.typeAsEnum.name
+
+

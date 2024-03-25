@@ -12,7 +12,6 @@ from Allin.Model.Game.Game import Game
 
 from Allin.Vue.ThreaderView import ThreadedView
 
-
 def display_labyrinth(var):
     view = ThreadedView()
     view.loop(data_lock, var)
@@ -29,7 +28,6 @@ lock = Lock()
 
 parser = reqparse.RequestParser()
 parser.add_argument('list', type=list)
-
 
 land = ["--------------------\n->------------------\n->------------------\n"]
 teamWithPrio = EnumPlayer.joueur1
@@ -62,15 +60,22 @@ def registerTeam():
     return message
 
 # Renvoi le choix de pion de l'adversaire
-@app.route("init/askSpawnChoice")
+@app.route("init/askSpawnChoice", methods=['GET'])
 def askSpawnChoice():
-
-    None
+    arg = request.args.to_dict()
+    message = moteur.askSpawnTaken(arg["team"])
+    if debug:
+        print("ask Team ", arg["team"], " pour connaitre le pion en face", message)
+    return message
 
 # Renvoi le dictionnaire des choix de mur de l'adversaire
-@app.route("init/askWallsChoice")
+@app.route("init/askWallsChoice", methods=['GET'])
 def askWallsChoice():
-    None
+    arg = request.args.to_dict()
+    message = moteur.askWallsTaken(arg["team"])
+    if debug:
+        print("ask Team ", arg["team"], " pour connaitre les walls en face", message)
+    return message
 
 # Register le nom de la team, ainsi que le type de pion choisi
 @app.route("/init/registerWalls", methods=['GET'])

@@ -48,24 +48,21 @@ class Client:
         # a voir avec l'histoire d'utiliser une liste
         # https://stackoverflow.com/questions/65778471/how-to-pass-a-list-as-an-argument-when-using-restful-api-and-flask
         r = requests.get("http://127.0.0.1:5000/init/registerWalls?team="+ self._name +"&walls=" + json.dumps(murs) )
-
         return r.text
-
 
    # demande quel pion a été choisi
     def askOtherSpawn(self):
-        pionAdverse = 1
-
-
-        return pionAdverse
+        r = requests.get("http://127.0.0.1:5000/init/askSpawnChoice?team="+ self._name)
+        return r.text
 
    # demande quel mur a été choisi
-
     def askOtherWalls(self):
-        wallz = {}
-
-        return wallz
-
+        r = requests.get("http://127.0.0.1:5000/loop/askWallsChoice?team=" + self._name)
+        received = json.loads(r.text)
+        hum = tuple(i for i in received)
+        if cf.debug :
+            print("demande des autres murs", hum)
+        return hum
 
     # endregion
 

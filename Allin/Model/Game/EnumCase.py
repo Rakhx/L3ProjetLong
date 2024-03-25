@@ -26,11 +26,11 @@ class EnumCase(Enum):
 
     def __repr__(self):
         if self.name == EnumCase.pionVide.name:
-            return 'c0'
+            return '▭'
         if self.name == EnumCase.murVide.name:
-            return 'm0'
+            return '▣'
         if self.name == EnumCase.caseUseless.name:
-            return 'u0'
+            return '▬'
         if self.name == EnumCase.pionJ1.name:
             return 'p1'
         if self.name == EnumCase.pionJ2.name:
