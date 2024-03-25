@@ -1,5 +1,8 @@
-from Allin.Exception.Exceptions import CaseOccupedException, CaseEmptyException, CaseWrongTypeException
+from Allin.Exception.Exceptions import CaseOccupedException, CaseEmptyException, CaseWrongTypeException, \
+    WallIntersectionException
 from Allin.Model.Game.EnumCase import EnumCase, EnumTypeCase, EnumWall
+from Allin.Model.Game.items.Wall import *
+import Allin.Model.Config as cg
 
 
 class Plateau:
@@ -15,7 +18,8 @@ class Plateau:
     # region Structure's manipulation
 
     # si collision, raise exception
-    def moveItem(self, itemType, oldPosition, newPosition):
+    def moveItem(self, item, oldPosition, newPosition):
+        itemType = item.getItemType()
         if newPosition in self.kvPosItem:
             raise CaseOccupedException(
                 self.moveItem.__qualname__ + " oldP " + str(oldPosition) + " newP " + str(newPosition))
@@ -27,22 +31,18 @@ class Plateau:
         self.kvPosItem[newPosition] = objectToMove  # replace
 
     # si case deja occupé, exception
-    def putItem(self, enumCase, position):
+    def putItem(self, item, position):
+
         if (position in self.kvPosItem):
             raise CaseOccupedException(
-                self.putItem.__qualname__ + " item " + str(enumCase) + " position " + str(position))
-        if not isinstance(enumCase, EnumCase):
-            raise TypeError()
+                self.putItem.__qualname__ + " item " + item.getItemType() + " position " + str(position))
 
-        self.kvPosItem[position] = enumCase
+        self.kvPosItem[position] = item
 
     # si case vide, exception
     def removeItem(self, position):
         if (position not in self.kvPosItem):
             raise CaseEmptyException(self.removeItem.__qualname__ + " position " + str(position))
-
-    def placerMur(self, murType, postition):
-        None
 
     # endregion
 
@@ -54,7 +54,7 @@ class Plateau:
                 pos = (i, j)
                 # si un item spécial est la
                 if pos in self.kvPosItem:
-                    toAdd = EnumCase(self.kvPosItem[pos]).__repr__()
+                    toAdd = self.kvPosItem[pos].getRepr()
                 # sinon si double pair, case joueur vide
                 elif (i % 2 == j % 2) & (i % 2 == 0):
                     toAdd = EnumCase.pionVide.__repr__()
@@ -81,12 +81,54 @@ class Plateau:
             return False
         return True
 
+
     def isWallCanBePlaced(self, murType, orientation):
-       longueur = 4 if murType == EnumWall.long.value else 2
+        longueur = 4 if murType == EnumWall.long.value else 2
+
+    # fonction de placement de mur.
+    def putWall(self, murType, position, orientation, owner):
+        ok = True
+        # on regarde les cases concernées si le mur est placé
+        cases = []
+        cases = fromWallToCase(murType, position, orientation)
+        # les cases sont-elles dispo, et dans le plateau de jeu ?
+        for pos in cases:
+            ok &= self.isCaseAvailable(pos) & isCaseLegit(pos)
+        if not ok :
+            raise WallIntersectionException("[PutWall]")
+
+        mur = ""
+        # creation d'un objet mur qui sera placé aux différentes cases
+        if murType is EnumWall.classic:
+            mur = WallClassic(cases, owner)
+        elif murType is EnumWall.solid:
+            mur = WallSolid(cases, owner)
+        elif murType is EnumWall.long:
+            mur = WallLong(cases, owner)
+        elif murType is EnumWall.door:
+            mur = WallDoor(cases, owner)
+
+        for pos in cases:
+            self.kvPosItem[pos] = mur
+
+        owner.useWall(murType)
+
+    def removeWall(self, pos):
+        # checker si existe
+
+        # puis
+        mur = self.kvPosItem[pos]
+        positions = mur.positions
+
+        # pour chacune des positions on desalloue
+        for pos in positions:
+            self.removeItem(pos)
+        # Nécessaire?
+        del mur
 
 
-
-
+# --------------------------
+# region fonction statique
 def isCaseForType(enumCaseType, pos):
     i = pos[0]
     j = pos[1]
@@ -107,9 +149,46 @@ def isCaseForType(enumCaseType, pos):
 
     return result
 
+# Depuis un placement hypothétique, et un type de mur, renvoie les cases concernées
+def fromWallToCase(typeWall, pos, orientation):
+    cases = []
+    repetition = 2
+    if orientation == EnumOrientation.droite:
+        offsetX = 0
+        offsetY = 1
 
-# test = Plateau(9)
-# test.putItem(EnumCase.pionJ1, (0,8))
-# test.putItem(EnumCase.pionJ2, (0,0))
-# lol = test.getAsciiRepresentation()
-# print(lol)
+    elif orientation == EnumOrientation.gauche:
+        offsetX = 0
+        offsetY = -1
+
+    elif orientation == EnumOrientation.haut:
+        offsetX = -1
+        offsetY = 0
+
+    elif orientation == EnumOrientation.bas:
+        offsetX = 1
+        offsetY = 0
+
+    # on décale la position pour avoir la premiere cellule comme cellule case
+    pos = (pos[0] + offsetX, pos[1] + offsetY)
+
+
+    # ensuite l'offset sera de deux en deux
+    offsetY *= 2
+    offsetX *= 2
+
+    if typeWall == EnumWall.long:
+        repetition = 4
+
+    for i in range(repetition):
+        cases.append((pos[0] + i*offsetX, pos[1] +i* offsetY))
+
+    return cases
+
+# La case existe t elle par rapport à la dimension du plateau
+def isCaseLegit(pos):
+    posX = pos[0]
+    posY = pos[1]
+    return 0 <= posX < cg.taillePlateau * 2 - 1 and 0 <= posY < cg.taillePlateau * 2 - 1
+
+# endregion

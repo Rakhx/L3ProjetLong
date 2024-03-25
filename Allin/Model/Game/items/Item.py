@@ -1,7 +1,15 @@
 # classe commune à tout les éléments sur le plateau
-class Item:
+import abc
+
+class Item(abc.ABC):
     def __init__(self, pos):
         self.position = pos
+    def getRepr(self):
+        return f"{self.getLetter()}{self.number}"
+    @abc.abstractmethod
+    def getLetter(self):
+        pass
 
-    def __init__(self):
-        None
+    @abc.abstractmethod
+    def getItemType(self):
+       pass

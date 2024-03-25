@@ -61,11 +61,13 @@ def registerTeam():
         print("register Team ", arg["team"], "de type: " , arg["pion"], " avec un retour ", message)
     return message
 
+# Renvoi le choix de pion de l'adversaire
 @app.route("init/askSpawnChoice")
 def askSpawnChoice():
 
     None
 
+# Renvoi le dictionnaire des choix de mur de l'adversaire
 @app.route("init/askWallsChoice")
 def askWallsChoice():
     None
@@ -91,23 +93,30 @@ def registerWalls():
 #   Boucle en cours de  game
 # --------------------------------------
 
+# Deplacement du pion sur une position donnée
+# team, posX, posY
 @app.route('/loop/move', methods=['GET'])
 def deplacementUnite():
     param = request.args.to_dict()
     return moteur.deplacementUnite(param["team"], (int(param["posX"]), int(param["posY"])))
 
+# Placement d'un mur donné pour une team donné
+# team, typeMur ,posX, posY, orientation
 @app.route('/loop/placeWalls', methods=['GET'])
 def placerMur():
     param = request.args.to_dict()
     team = param["team"]
+    mur = param["typeMur"]
     pos = (param["posX"], param["posY"])
     orientation = param["orientation"]
-    # On vérifie si le joueur possede tjrs ce type de mur
 
-    # on vérifie que la case est disponible pour mettre le mur
+    retour = moteur.placerMur(mur, pos, orientation, team)
 
-    # on vérifie que l'orientation du mur ne le fait pas rentrer en intersection avec un autre
+    return retour
 
+
+# Utilisation du pouvoir pour un joueur donnée
+# team, posX, posY
 @app.route('/loop/usePower', methods=['GET'])
 def usePower():
     param = request.args.to_dict()

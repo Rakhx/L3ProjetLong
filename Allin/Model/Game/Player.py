@@ -2,6 +2,7 @@ import Allin.Model.Config as cf
 import typing
 
 from Allin.Exception.Exceptions import WallDisponibilityException
+from Allin.Model.Game.items.Spawn import Spawn
 
 
 class Player:
@@ -15,15 +16,29 @@ class Player:
         pos2 = (cf.taillePlateau*2-1 , (cf.taillePlateau-1) / 2 )
         pos = (cf.taillePlateau*2-1 * enumJoueur.value , (cf.taillePlateau-1) / 2 )
         self.positionPion = pos
-        self.spawn = pion
+        self.spawn = Spawn(pos, enumJoueur, pion)
+
 
     def setWalls(self, murs):
         self.walls = murs
 
+    def useWall(self, enumWallToUse):
+        wallAsNumber = enumWallToUse.value
+        try :
+            nbWallAvailable = self.walls[wallAsNumber]
+            if(nbWallAvailable == 1):
+                del self.walls[wallAsNumber]
+            else :
+                nbWall = nbWallAvailable - 1
+                self.walls[wallAsNumber] = nbWall
+
+        except :
+            print("probleme usewall")
+
 
     # utilise une instance d'un mur donné
-    def isWallAvailable(self, murUtilise:int):
-        if murUtilise in self.walls :
+    def isWallAvailable(self, enumWalLToCheck):
+        if enumWalLToCheck.value in self.walls :
             # self.walls.remove(murUtilise)
             return True
         else :

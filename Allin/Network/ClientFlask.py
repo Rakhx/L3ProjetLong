@@ -39,7 +39,7 @@ class Client:
         totalCout = 0
         try :
             for mur in murs :
-                totalCout += cf.murEtCout.get(mur)
+                totalCout += cf.kvMurEtCout.get(mur)
             if totalCout > cf.nbrPointAchatMur :
                 raise WallInitListException("[ClientFlask] - ChoixMur: " + str(murs))
         except ValueError:
@@ -81,7 +81,6 @@ class Client:
         # return test
         return "ok"
 
-
     def __releasePriority(self):
         r = requests.get("http://127.0.0.1:5000/loop/releasePrio")
         return r.text
@@ -121,7 +120,7 @@ class Client:
                          + self.posString(position)+"&orientation=" + str(orientation))
         received = json.loads(r.text)
         tuple(i for i in received)
-        #TODO
+
 
 
     # utilisation du pouvoir de l'unité
@@ -131,9 +130,7 @@ class Client:
     def utilisationPouvoir(self, positionX:int, positionY:int):
         if not isinstance(positionX, int) or not isinstance(positionY, int):
             raise TypeError()
-
         position = (positionX, positionY)
-
         r = requests.get("http://127.0.0.1:5000/loop/usePower?team=" + self._name + self.posString(position))
         return r.text
 

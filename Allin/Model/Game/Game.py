@@ -2,7 +2,7 @@ from typing import List, Dict
 
 from Allin.Exception.Exceptions import WallInitListException, CaseOccupedException, CaseWrongTypeException, \
     WallDisponibilityException, WallIntersectionException
-from Allin.Model.Game.EnumCase import EnumPion, EnumPlayer, EnumWall, EnumTypeCase
+from Allin.Model.Game.EnumCase import EnumPion, EnumPlayer, EnumWall, EnumTypeCase, EnumOrientation
 from Allin.Model.Game.Plateau import Plateau, isCaseForType
 from Allin.Model.Game.Player import Player
 import Allin.Model.Config as cf
@@ -11,7 +11,7 @@ import Allin.Model.Config as cf
 
 class Game :
     def __init__(self):
-        self.numPlayer = -1
+        self.numPlayer = 0
         self.kvPlayersByName = {}
         self.kvPlayersByNum = {}
         self.__plateau = Plateau(cf.taillePlateau)
@@ -19,20 +19,27 @@ class Game :
     def getBoardState(self):
         return self.__plateau.getAsciiRepresentation()
 
+    # --------------------------------------
+    #   region Initialisation de début de game
+    # --------------------------------------
+
     # Ajoute un joueur a la partie, avec son nom et le pion choisi.
     def addPlayer(self, name:str, pion:int):
         self.numPlayer+=1
         joueur = Player(EnumPlayer(self.numPlayer), name, EnumPion(pion))
-        self.kvPlayersByName[name] =  joueur
-        self.kvPlayersByNum[self.numPlayer] =  joueur
-        return ("joueur " + name + " enregistré avec un pion " + EnumPion(pion).__str__() + " en joueur numero " + str(EnumPlayer(self.numPlayer)))
+        self.kvPlayersByName[name] = joueur
+        self.kvPlayersByNum[self.numPlayer] = joueur
+        # positionner le pion du joueur
+        lePion = joueur.spawn
+        self.__plateau.putItem(lePion, lePion.position)
+        return ("joueur " + name + " enregistré avec un pion " + str(joueur.spawn) + " en joueur numero " + joueur.player.name)
 
     # Donne les murs choisit par le joueur
     def initWallsList(self, playerName, murs:Dict[int,int]):
         totalCout = 0
         print(murs)
         for mur in murs:
-            totalCout += cf.murEtCout.get(mur)
+            totalCout += cf.kvMurEtCout.get(mur)
         if totalCout > cf.nbrPointAchatMur:
             raise WallInitListException("[Game.addWalls]")
 
@@ -41,14 +48,20 @@ class Game :
         for k, v in murs.items():
             res += "quantite de mur " + str(EnumWall(int(k))) + " : " + str(v) + "\n"
         return res
-        return ""
+
+    # endregion
+
+    # --------------------------------------
+    # region fonction de boucle
+    # --------------------------------------
 
     def deplacementUnite(self, team, posX, posY):
         try :
             player = self.kvPlayersByName[team]
+            pion = player.spawn
             oldPosition = player.positionPion
             newPosition = (posX, posY)
-            self.__plateau.moveItem(EnumTypeCase.forSpawn, oldPosition, newPosition )
+            self.__plateau.moveItem(pion, oldPosition, newPosition )
             player.moveSpawn(newPosition)
         except CaseOccupedException :
             return "Not Moved, already occuped"
@@ -59,11 +72,10 @@ class Game :
 
         return "ok"
 
-    def placerMur(self, team, mur, posX, posY, orientation):
+    def placerMur(self, mur, pos, orientation, team):
 
         try :
             player = self.kvPlayersByName[team]
-            pos = (posX, posY)
 
             # Mur dispo ?
             player.isWallAvailable(mur)
@@ -75,28 +87,40 @@ class Game :
                 raise CaseOccupedException("[Game.placerMur]")
             # intersection ?
 
-
             # Si tout est ok, on y va
-            self.__plateau.placerMur(mur, pos, orientation)
+            self.__plateau.putWall(mur, pos, orientation, player)
 
 
         except WallDisponibilityException:
-            None
+            print("ERREUR BEBE")
         except CaseWrongTypeException:
-            None
+            print("ERREUR BEBE")
         except CaseOccupedException:
-            None
+            print("ERREUR BEBE")
         except WallIntersectionException:
-            None
+            print("ERREUR BEBE")
 
 
+        print(player.walls)
 
     def usePower(self, team, posX, posY):
         None
 
 
+    # endregion
+
 gamou = Game()
 print(gamou.addPlayer("zozo", EnumPion.sappeur.value))
 print(gamou.addPlayer("zinzin", EnumPion.jumper.value))
+
+walls1 = {0:2,1:1,2:1,3:1}
+walls2 = {0:1,1:1,2:1,3:1}
+gamou.initWallsList("zozo", walls1)
+gamou.placerMur(EnumWall.classic,(1,1),EnumOrientation.droite,"zozo")
+gamou.placerMur(EnumWall.classic,(2,1),EnumOrientation.droite,"zozo")
+gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
+
+
+# gamou.initWallsList("zinzin", walls2)
 print(gamou.getBoardState())
 

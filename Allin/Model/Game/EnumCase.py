@@ -63,8 +63,8 @@ class EnumOrientation(Enum):
     gauche = 3
 
 class EnumPlayer(Enum):
-    joueur1 = 0
-    joueur2 = 1
+    joueur1 = 1
+    joueur2 = 2
 
 class EnumPion(Enum):
     sappeur = 0
