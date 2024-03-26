@@ -18,3 +18,7 @@ kvMurEtCout = {0:1, 1:2, 2:3, 3:3}
 
 # couple de type pion et etemps de rechargement pouvoir
 kvPionEtReload = {EnumPion.sappeur:4, EnumPion.jumper:4, EnumPion.sprinter:4}
+
+releaseMode = False
+
+adresseServeur = "http://Rakhx.pythonanywhere.com/" if releaseMode else "http://127.0.0.1:5000"

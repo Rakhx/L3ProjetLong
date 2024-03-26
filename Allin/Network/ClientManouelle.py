@@ -4,6 +4,7 @@ import requests
 from typing import List, Dict
 from multiprocessing import Process
 from Allin.Network.ClientFlask import Client
+from Allin.Model.Config import *
 
 team1 = "john"
 team2 = "Fanfan"
@@ -11,12 +12,12 @@ wallz= {0: 1, 1: 1, 2: 1, 3: 1}
 wallz2= {0: 1, 1: 0, 2: 2, 3: 2}
 def registerPlayers(team):
     print("Request register player ", team)
-    r = requests.get("http://127.0.0.1:5000/init/registerTeam?team="+team+"&pion=0")
+    r = requests.get(adresseServeur+"/init/registerTeam?team="+team+"&pion=0")
     print(r.text)
 
 def registerWalls(team, wallz):
     print("Request register walls team", team, wallz, sep=";")
-    r = requests.get("http://127.0.0.1:5000/init/registerWalls?team="+ team +"&walls=" + json.dumps(wallz) )
+    r = requests.get(adresseServeur+"/init/registerWalls?team="+ team +"&walls=" + json.dumps(wallz) )
     print(r.text)
 
 # Fonction appelée par deux threads

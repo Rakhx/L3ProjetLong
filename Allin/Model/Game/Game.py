@@ -122,19 +122,19 @@ class Game :
 
 
     # endregion
+if __name__ == '__main__' :
+    gamou = Game()
+    print(gamou.addPlayer("zozo", EnumPion.sappeur.value))
+    print(gamou.addPlayer("zinzin", EnumPion.jumper.value))
+    #
+    walls1 = {0:2,1:1,2:1,3:1}
+    walls2 = {0:1,1:1,2:1,3:1}
+    print(gamou.initWallsList("zozo", walls1))
+    gamou.placerMur(EnumWall.classic,(1,1),EnumOrientation.droite,"zozo")
+    gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
+    gamou.placerMur(EnumWall.classic,(5,1),EnumOrientation.droite,"zozo")
 
-gamou = Game()
-print(gamou.addPlayer("zozo", EnumPion.sappeur.value))
-print(gamou.addPlayer("zinzin", EnumPion.jumper.value))
-#
-walls1 = {0:2,1:1,2:1,3:1}
-walls2 = {0:1,1:1,2:1,3:1}
-print(gamou.initWallsList("zozo", walls1))
-gamou.placerMur(EnumWall.classic,(1,1),EnumOrientation.droite,"zozo")
-gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
-gamou.placerMur(EnumWall.classic,(5,1),EnumOrientation.droite,"zozo")
 
-
-# gamou.initWallsList("zinzin", walls2)
-print(gamou.getBoardState())
+    # gamou.initWallsList("zinzin", walls2)
+    print(gamou.getBoardState())
 

@@ -3,6 +3,7 @@ import time
 import requests
 from typing import List, Dict
 import Allin.Model.Config as cf
+from Allin.Model.Config import *
 from Allin.Exception.Exceptions import *
 class Client:
 
@@ -10,15 +11,15 @@ class Client:
         self._name = teamName
 
         # # Position de départ
-        # r = requests.get("http://127.0.0.1:5000/init/register/" + teamName)
+        # r = requests.get(adresseServeur+"/init/register/" + teamName)
         # received = json.loads(r.text)
         # self._startPosition = tuple(int(i) for i in received[0])
         # # Taille du terrain
-        # r = requests.get("http://127.0.0.1:5000/init/land")
+        # r = requests.get(adresseServeur+"/init/land")
         # received = json.loads(r.text)
         # self._tailleLand = tuple(int(i) for i in received[0])
         # # Liste d'unités disponibles
-        # r = requests.get("http://127.0.0.1:5000/init/units")
+        # r = requests.get(adresseServeur+"/init/units")
         # received = json.loads(r.text)
         # self._unitDispos = tuple(i for i in received)
 
@@ -29,7 +30,7 @@ class Client:
     # enregistre l'équipe auprès du serveur, avec un nom d'équipe et un type de pion
     # type de pion 0:pionSappeur, 1:pion Jumper, 2:pion sprinter
     def registerTeam(self, pionChoisi:int):
-        r = requests.get("http://127.0.0.1:5000/init/registerTeam?team=" + self._name + "&pion=" + str(pionChoisi))
+        r = requests.get(adresseServeur+"/init/registerTeam?team=" + self._name + "&pion=" + str(pionChoisi))
         return r.text
 
     # choisi un ensemble de mur pour commencer la partie
@@ -47,17 +48,17 @@ class Client:
 
         # a voir avec l'histoire d'utiliser une liste
         # https://stackoverflow.com/questions/65778471/how-to-pass-a-list-as-an-argument-when-using-restful-api-and-flask
-        r = requests.get("http://127.0.0.1:5000/init/registerWalls?team="+ self._name +"&walls=" + json.dumps(murs) )
+        r = requests.get(adresseServeur+"/init/registerWalls?team="+ self._name +"&walls=" + json.dumps(murs) )
         return r.text
 
    # demande quel pion a été choisi
     def askOtherSpawn(self):
-        r = requests.get("http://127.0.0.1:5000/init/askSpawnChoice?team="+ self._name)
+        r = requests.get(adresseServeur+"/init/askSpawnChoice?team="+ self._name)
         return r.text
 
    # demande quel mur a été choisi
     def askOtherWalls(self):
-        r = requests.get("http://127.0.0.1:5000/loop/askWallsChoice?team=" + self._name)
+        r = requests.get(adresseServeur+"/loop/askWallsChoice?team=" + self._name)
         received = json.loads(r.text)
         hum = tuple(i for i in received)
         if cf.debug :
@@ -71,7 +72,7 @@ class Client:
     # --------------------------------------
 
     def __askPriority(self):
-        r = requests.get("http://127.0.0.1:5000/loop/askPrio?team=" + self._name)
+        r = requests.get(adresseServeur+"/loop/askPrio?team=" + self._name)
         # received = json.loads(r.text)
         # Doit retourner l'état du board.
         # test = tuple(i for i in received)
@@ -79,7 +80,7 @@ class Client:
         return "ok"
 
     def __releasePriority(self):
-        r = requests.get("http://127.0.0.1:5000/loop/releasePrio")
+        r = requests.get(adresseServeur+"/loop/releasePrio")
         return r.text
 
     # fonction à appeler dans le while
@@ -104,7 +105,7 @@ class Client:
         # if not isinstance(positionX, int) or not isinstance(positionY, int):
         #     raise TypeError()
         position = (positionX, positionY)
-        r = requests.get("http://127.0.0.1:5000/loop/move?team=" + self._name + self.posString(position))
+        r = requests.get(adresseServeur+"/loop/move?team=" + self._name + self.posString(position))
         return r.text
 
     # Orientation : 0 : vers le haut, 1 vers la droite, 2 vers le bas, 3 vers la gauche
@@ -113,7 +114,7 @@ class Client:
     # Code erreur : 1:mur sort map, 2:mur croise autre mur, 3:mur enferme joueur 4:mur non disponible 10:mauvais input
     def placementMur(self, typeMur:int, positionX:int, positionY:int, orientation:int):
         position = (positionX, positionY)
-        r = requests.get("http://127.0.0.1:5000/loop/placeWalls?team=" + self._name + "&typeMur=" + str(typeMur)
+        r = requests.get(adresseServeur+"/loop/placeWalls?team=" + self._name + "&typeMur=" + str(typeMur)
                          + self.posString(position)+"&orientation=" + str(orientation))
         received = json.loads(r.text)
         tuple(i for i in received)
@@ -128,7 +129,7 @@ class Client:
         if not isinstance(positionX, int) or not isinstance(positionY, int):
             raise TypeError()
         position = (positionX, positionY)
-        r = requests.get("http://127.0.0.1:5000/loop/usePower?team=" + self._name + self.posString(position))
+        r = requests.get(adresseServeur+"/loop/usePower?team=" + self._name + self.posString(position))
         return r.text
 
     # endregion

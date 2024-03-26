@@ -60,7 +60,7 @@ def registerTeam():
     return message
 
 # Renvoi le choix de pion de l'adversaire
-@app.route("init/askSpawnChoice", methods=['GET'])
+@app.route("/init/askSpawnChoice", methods=['GET'])
 def askSpawnChoice():
     arg = request.args.to_dict()
     message = moteur.askSpawnTaken(arg["team"])
@@ -69,7 +69,7 @@ def askSpawnChoice():
     return message
 
 # Renvoi le dictionnaire des choix de mur de l'adversaire
-@app.route("init/askWallsChoice", methods=['GET'])
+@app.route("/init/askWallsChoice", methods=['GET'])
 def askWallsChoice():
     arg = request.args.to_dict()
     message = moteur.askWallsTaken(arg["team"])
