@@ -1,8 +1,7 @@
-import Allin.Model.Config as cf
-import typing
+import src.Allin_Rakhx.Model.Config as cf
 
-from Allin.Exception.Exceptions import WallDisponibilityException
-from Allin.Model.Game.items.Spawn import Spawn
+from src.Allin_Rakhx.Exception.Exceptions import WallDisponibilityException
+from src.Allin_Rakhx.Model.Game.items.Spawn import Spawn
 
 
 class Player:

@@ -1,10 +1,11 @@
 import json
 import time
 import requests
-from typing import List, Dict
-import Allin.Model.Config as cf
-from Allin.Model.Config import *
-from Allin.Exception.Exceptions import *
+from typing import Dict
+from src.Allin_Rakhx.Model.Config import *
+import src.Allin_Rakhx.Model.Config as cf
+
+from src.Allin_Rakhx.Exception.Exceptions import *
 class Client:
 
     def __init__(self, teamName:str):
@@ -30,7 +31,7 @@ class Client:
     # enregistre l'équipe auprès du serveur, avec un nom d'équipe et un type de pion
     # type de pion 0:pionSappeur, 1:pion Jumper, 2:pion sprinter
     def registerTeam(self, pionChoisi:int):
-        r = requests.get(adresseServeur+"/init/registerTeam?team=" + self._name + "&pion=" + str(pionChoisi))
+        r = requests.get(adresseServeur + "/init/registerTeam?team=" + self._name + "&pion=" + str(pionChoisi))
         return r.text
 
     # choisi un ensemble de mur pour commencer la partie
@@ -90,7 +91,7 @@ class Client:
         boardState = self.__askPriority()
         return boardState
 
-    def bye(self):
+    def disconnection(self):
         self.__releasePriority()
 
     # endregion
@@ -102,8 +103,6 @@ class Client:
     # return 0 si s'est bien passé
     # Code erreur  1:, 2:obstacle mur, 3:sortie de terrain, 10:mauvais input
     def deplacement(self, positionX:int, positionY:int):
-        # if not isinstance(positionX, int) or not isinstance(positionY, int):
-        #     raise TypeError()
         position = (positionX, positionY)
         r = requests.get(adresseServeur+"/loop/move?team=" + self._name + self.posString(position))
         return r.text
@@ -118,7 +117,6 @@ class Client:
                          + self.posString(position)+"&orientation=" + str(orientation))
         received = json.loads(r.text)
         tuple(i for i in received)
-
 
 
     # utilisation du pouvoir de l'unité

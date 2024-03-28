@@ -1,16 +1,15 @@
 import json
 from threading import Lock
-from flask import Flask, request
 from threading import Thread
-from flask import Flask, jsonify, request
-from flask_restful import Api, Resource, reqparse
+from flask import Flask, request
+from flask_restful import reqparse
 
 
-from Allin.Model.Config import viewGui, debug
-from Allin.Model.Game.EnumCase import EnumPlayer, EnumWall
-from Allin.Model.Game.Game import Game
+from src.Allin_Rakhx.Model.Config import viewGui, debug
+from src.Allin_Rakhx.Model.Game.EnumCase import EnumPlayer
+from src.Allin_Rakhx.Model.Game.Game import Game
 
-from Allin.Vue.ThreaderView import ThreadedView
+from src.Allin_Rakhx.Vue.ThreaderView import ThreadedView
 
 def display_labyrinth(var):
     view = ThreadedView()

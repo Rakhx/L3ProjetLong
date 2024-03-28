@@ -1,5 +1,5 @@
-from Allin.Model.Game.EnumCase import EnumOrientation, EnumPlayer, EnumWall
-from Allin.Model.Game.items.Item import Item
+from src.Allin_Rakhx.Model.Game.EnumCase import EnumPlayer, EnumWall
+from src.Allin_Rakhx.Model.Game.items.Item import Item
 import abc
 
 class Wall(Item, abc.ABC):

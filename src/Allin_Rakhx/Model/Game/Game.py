@@ -1,11 +1,11 @@
-from typing import List, Dict
+from typing import Dict
 
-from Allin.Exception.Exceptions import WallInitListException, CaseOccupedException, CaseWrongTypeException, \
+from src.Allin_Rakhx.Exception.Exceptions import WallInitListException, CaseOccupedException, CaseWrongTypeException, \
     WallDisponibilityException, WallIntersectionException
-from Allin.Model.Game.EnumCase import EnumPion, EnumPlayer, EnumWall, EnumTypeCase, EnumOrientation
-from Allin.Model.Game.Plateau import Plateau, isCaseForType
-from Allin.Model.Game.Player import Player
-import Allin.Model.Config as cf
+from src.Allin_Rakhx.Model.Game.EnumCase import EnumPion, EnumPlayer, EnumWall, EnumTypeCase, EnumOrientation
+from src.Allin_Rakhx.Model.Game.Plateau import Plateau, isCaseForType
+from src.Allin_Rakhx.Model.Game.Player import Player
+import src.Allin_Rakhx.Model.Config as cf
 
 # Classe de moteur de jeu
 

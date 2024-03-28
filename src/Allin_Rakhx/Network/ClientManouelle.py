@@ -1,10 +1,7 @@
 import json
-import time
 import requests
-from typing import List, Dict
 from multiprocessing import Process
-from Allin.Network.ClientFlask import Client
-from Allin.Model.Config import *
+from src.Allin_Rakhx.Network.ClientFlask import Client
 
 team1 = "john"
 team2 = "Fanfan"

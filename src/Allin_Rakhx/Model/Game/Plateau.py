@@ -1,8 +1,8 @@
-from Allin.Exception.Exceptions import CaseOccupedException, CaseEmptyException, CaseWrongTypeException, \
+from src.Allin_Rakhx.Exception.Exceptions import CaseOccupedException, CaseEmptyException, CaseWrongTypeException, \
     WallIntersectionException
-from Allin.Model.Game.EnumCase import EnumCase, EnumTypeCase, EnumWall
-from Allin.Model.Game.items.Wall import *
-import Allin.Model.Config as cg
+from src.Allin_Rakhx.Model.Game.EnumCase import EnumCase, EnumTypeCase, EnumWall, EnumOrientation
+import src.Allin_Rakhx.Model.Config as cg
+from src.Allin_Rakhx.Model.Game.items.Wall import WallDoor, WallSolid, WallClassic, WallLong
 
 
 class Plateau:

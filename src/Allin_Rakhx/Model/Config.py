@@ -1,4 +1,4 @@
-from Allin.Model.Game.EnumCase import *
+from src.Allin_Rakhx.Model.Game.EnumCase import *
 
 
 # Taille du plateau en nombre de case

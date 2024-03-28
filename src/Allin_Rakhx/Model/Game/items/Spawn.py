@@ -1,6 +1,6 @@
-from Allin.Model.Game.EnumCase import EnumPlayer, EnumPion
-from Allin.Model.Game.items.Item import Item
-import Allin.Model.Config as cg
+from src.Allin_Rakhx.Model.Game.EnumCase import EnumPlayer, EnumPion
+from src.Allin_Rakhx.Model.Game.items.Item import Item
+import src.Allin_Rakhx.Model.Config as cg
 class Spawn(Item):
     def __init__(self, pos, owner, typeAsEnum):
         super().__init__(pos)
