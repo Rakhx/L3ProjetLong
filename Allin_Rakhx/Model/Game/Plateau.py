@@ -1,9 +1,8 @@
-from src.Allin_Rakhx.Exception.Exceptions import CaseOccupedException, CaseEmptyException, CaseWrongTypeException, \
+from Allin_Rakhx.Exception.Exceptions import CaseOccupedException, CaseEmptyException, CaseWrongTypeException, \
     WallIntersectionException
-from src.Allin_Rakhx.Model.Game.EnumCase import EnumCase, EnumTypeCase, EnumWall, EnumOrientation
-import src.Allin_Rakhx.Model.Config as cg
-from src.Allin_Rakhx.Model.Game.items.Wall import WallDoor, WallSolid, WallClassic, WallLong
-
+from Allin_Rakhx.Model.Game.EnumCase import EnumCase, EnumTypeCase, EnumWall, EnumOrientation
+import Allin_Rakhx.Model.Config as cg
+from Allin_Rakhx.Model.Game.items.Wall import WallDoor, WallSolid, WallClassic, WallLong, Wall, WallTemp
 
 class Plateau:
 
@@ -14,6 +13,9 @@ class Plateau:
         # les items particuliers
         self.kvPosItem = {}
         # et le labyrinthe case par case? Ou inutile
+
+        # Liste des murs temporaires
+        self.listTempWall = []
 
     # region Structure's manipulation
 
@@ -46,6 +48,13 @@ class Plateau:
 
     # endregion
 
+    # met a jour les lifespan des mur temp.
+    def newTurn(self):
+        for mur in self.listTempWall:
+            if mur.isTimeToRemove():
+                position = mur.getPositions()[0]
+                self.removeWall(position)
+
     def getAsciiRepresentation(self):
         res = ""
         for i in range(self.size):
@@ -74,17 +83,6 @@ class Plateau:
         # en sortie, on est censé avoir l'ascii Repr.
         return res
 
-    # Test si la case donné en pos. correspond au type d'item qu'on souhaite y mettre
-
-    def isCaseAvailable(self, pos):
-        if pos in self.kvPosItem:
-            return False
-        return True
-
-
-    def isWallCanBePlaced(self, murType, orientation):
-        longueur = 4 if murType == EnumWall.long.value else 2
-
     # fonction de placement de mur.
     def putWall(self, murType, position, orientation, owner):
         ok = True
@@ -107,12 +105,16 @@ class Plateau:
             mur = WallLong(cases, owner)
         elif murType is EnumWall.door:
             mur = WallDoor(cases, owner)
+        elif murType is EnumWall.temp:
+            mur = WallTemp(cases, owner)
+            self.listTempWall.append(mur)
 
         for pos in cases:
             self.kvPosItem[pos] = mur
 
         owner.useWall(murType)
 
+    # supprime un mur par une de ses positions
     def removeWall(self, pos):
         # checker si existe
 
@@ -125,6 +127,45 @@ class Plateau:
             self.removeItem(pos)
         # Nécessaire?
         del mur
+
+    def getCasesReachable(self, listeResultat, posDepart, deepth):
+        if(deepth > 0):
+            posX = posDepart[0]
+            posY = posDepart[1]
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    # Inclu les cas l'un forcement égal a 0, exclu les deux égaux à 0
+                    if (i * j == 0) & (i != j):
+                        posWall = (posX + i, posY + j)
+
+                        # on vérifie qu'il n'y a pas de mur sur le chemin
+                        if posWall not in self.kvPosItem :
+                            posCase = (posX + 2*i, posY + 2*j)
+                            # Si il y a le pion adverse en face, on appelle récursivement cette fonction
+                            if ( posCase in self.kvPosItem):
+                                # Faire l'appel récursif
+                                None
+                                self.getCasesReachable(listeResultat, posCase, deepth - 1)
+
+                                # passage à l'itération suivante
+                                # break ?
+                            # dans le cas ou la case suivante est dispo, on l'ajoute aux cases ou on peut aller,
+                            # et qu'on ne sort pas du cadre
+                            elif  ( 0 <= posCase[0] <=cg.taillePlateau*2 - 1) &  ( 0 <= posCase[1] <=cg.taillePlateau*2 - 1):
+                                    listeResultat.add(posCase)
+                                    self.getCasesReachable(listeResultat,posCase,deepth-1)
+
+
+
+
+    # Test si la case donné en pos. correspond au type d'item qu'on souhaite y mettre
+    def isCaseAvailable(self, pos):
+        if pos in self.kvPosItem:
+            return False
+        return True
+
+    def isWallCanBePlaced(self, murType, orientation):
+        longueur = 4 if murType == EnumWall.long.value else 2
 
 
 # --------------------------

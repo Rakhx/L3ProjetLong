@@ -1,28 +1,16 @@
 import json
 import time
+import flask
 import requests
 from typing import Dict
-from src.Allin_Rakhx.Model.Config import *
-import src.Allin_Rakhx.Model.Config as cf
+from Allin_Rakhx.Model.Config import *
+import Allin_Rakhx.Model.Config as cf
 
-from src.Allin_Rakhx.Exception.Exceptions import *
+from Allin_Rakhx.Exception.Exceptions import *
 class Client:
 
     def __init__(self, teamName:str):
         self._name = teamName
-
-        # # Position de départ
-        # r = requests.get(adresseServeur+"/init/register/" + teamName)
-        # received = json.loads(r.text)
-        # self._startPosition = tuple(int(i) for i in received[0])
-        # # Taille du terrain
-        # r = requests.get(adresseServeur+"/init/land")
-        # received = json.loads(r.text)
-        # self._tailleLand = tuple(int(i) for i in received[0])
-        # # Liste d'unités disponibles
-        # r = requests.get(adresseServeur+"/init/units")
-        # received = json.loads(r.text)
-        # self._unitDispos = tuple(i for i in received)
 
     # --------------------------------------
     #  region Initialisation de début de game
@@ -72,24 +60,20 @@ class Client:
     # region gestion des priorités
     # --------------------------------------
 
-    def __askPriority(self):
-        r = requests.get(adresseServeur+"/loop/askPrio?team=" + self._name)
-        # received = json.loads(r.text)
-        # Doit retourner l'état du board.
-        # test = tuple(i for i in received)
-        # return test
-        return "ok"
-
-    def __releasePriority(self):
-        r = requests.get(adresseServeur+"/loop/releasePrio")
-        return r.text
-
     # fonction à appeler dans le while
     def newTurn(self):
         self.__releasePriority()
         time.sleep(1)
         boardState = self.__askPriority()
         return boardState
+
+    def __askPriority(self):
+        r = requests.get(adresseServeur+"/loop/askPrio?team=" + self._name)
+        return r.text
+
+    def __releasePriority(self):
+        r = requests.get(adresseServeur+"/loop/releasePrio")
+        return r.text
 
     def disconnection(self):
         self.__releasePriority()
@@ -105,6 +89,7 @@ class Client:
     def deplacement(self, positionX:int, positionY:int):
         position = (positionX, positionY)
         r = requests.get(adresseServeur+"/loop/move?team=" + self._name + self.posString(position))
+
         return r.text
 
     # Orientation : 0 : vers le haut, 1 vers la droite, 2 vers le bas, 3 vers la gauche
@@ -115,9 +100,6 @@ class Client:
         position = (positionX, positionY)
         r = requests.get(adresseServeur+"/loop/placeWalls?team=" + self._name + "&typeMur=" + str(typeMur)
                          + self.posString(position)+"&orientation=" + str(orientation))
-        received = json.loads(r.text)
-        tuple(i for i in received)
-
 
     # utilisation du pouvoir de l'unité
     # Sauter par dessus
@@ -141,4 +123,13 @@ class Client:
     def getTeamName(self):
         return self._name
 
+    def fromResponseToString(self, resultRequest):
+        resultat = ""
+        for i in resultRequest:
+            for j in i :
+                resultat += j
+        return resultat
+
+    def classTag(self):
+        return "[ClientFlask]-"
     # endregion

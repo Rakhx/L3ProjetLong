@@ -1,11 +1,11 @@
 from typing import Dict
 
-from src.Allin_Rakhx.Exception.Exceptions import WallInitListException, CaseOccupedException, CaseWrongTypeException, \
+from Allin_Rakhx.Exception.Exceptions import WallInitListException, CaseOccupedException, CaseWrongTypeException, \
     WallDisponibilityException, WallIntersectionException
-from src.Allin_Rakhx.Model.Game.EnumCase import EnumPion, EnumPlayer, EnumWall, EnumTypeCase, EnumOrientation
-from src.Allin_Rakhx.Model.Game.Plateau import Plateau, isCaseForType
-from src.Allin_Rakhx.Model.Game.Player import Player
-import src.Allin_Rakhx.Model.Config as cf
+from Allin_Rakhx.Model.Game.EnumCase import EnumPion, EnumPlayer, EnumWall, EnumTypeCase, EnumOrientation
+from Allin_Rakhx.Model.Game.Plateau import Plateau, isCaseForType
+from Allin_Rakhx.Model.Game.Player import Player
+import Allin_Rakhx.Model.Config as cf
 
 # Classe de moteur de jeu
 
@@ -16,7 +16,10 @@ class Game :
         self.kvPlayersByNum = {}
         self.__plateau = Plateau(cf.taillePlateau)
 
-    def getBoardState(self):
+    def getBoardState(self, teamAsking):
+        player = self.kvPlayersByName[teamAsking]
+        player.beginTurn()
+        self.__plateau.newTurn()
         return self.__plateau.getAsciiRepresentation()
 
     # --------------------------------------
@@ -35,7 +38,7 @@ class Game :
         return ("joueur " + name + " enregistré avec un pion " + str(joueur.spawn) + " en joueur numero " + joueur.player.name)
 
     # Donne les murs choisit par le joueur
-    def initWallsList(self, playerName, murs:Dict[int,int]):
+    def initWallsList(self, playerName, murs:Dict[EnumWall,int]):
         kvMurQuantity = {}
         totalCout = 0
 
@@ -47,7 +50,7 @@ class Game :
             raise WallInitListException("[Game.addWalls]")
 
         self.kvPlayersByName[playerName].setWalls(kvMurQuantity)
-        res = "Joueur "+ playerName + "enregistre \n"
+        res = "Joueur "+ playerName + " enregistre \n"
         for k, v in murs.items():
             res += "quantite de mur " + str(EnumWall(int(k))) + " : " + str(v) + "\n"
         return res
@@ -75,6 +78,12 @@ class Game :
             pion = player.spawn
             oldPosition = player.positionPion
             newPosition = (posX, posY)
+            # Verification que le chemin existe depuis la position source
+            setCases = set()
+            if not self.__plateau.getCasesReachable(setCases,oldPosition, 1) :
+                return "Not moved, case pas atteignable pour l'unité"
+
+
             self.__plateau.moveItem(pion, oldPosition, newPosition )
             player.moveSpawn(newPosition)
         except CaseOccupedException :
@@ -84,7 +93,7 @@ class Game :
         except Exception as e:
             return "DeplacementUnit, autre type de probleme " + e.__str__()
 
-        return "ok"
+        return newPosition
 
     def placerMur(self, mur, pos, orientation, team):
 
@@ -104,7 +113,6 @@ class Game :
             # Si tout est ok, on y va
             self.__plateau.putWall(mur, pos, orientation, player)
 
-
         except WallDisponibilityException:
             print("WallDisponibilityException BEBE")
         except CaseWrongTypeException:
@@ -115,11 +123,19 @@ class Game :
             print("WallIntersectionException BEBE")
 
 
-        print(player.walls)
+        print(self.classTag(), "suite au placement du mur" , player.walls)
+        return "ok"
 
     def usePower(self, team, posX, posY):
         None
 
+    def classTag(self):
+        return "[Game]- "
+
+    def getCaseReachable(self, posDepart):
+        possibilite = set()
+        self.__plateau.getCasesReachable(possibilite, posDepart, 2)
+        print(possibilite)
 
     # endregion
 if __name__ == '__main__' :
@@ -127,14 +143,18 @@ if __name__ == '__main__' :
     print(gamou.addPlayer("zozo", EnumPion.sappeur.value))
     print(gamou.addPlayer("zinzin", EnumPion.jumper.value))
     #
-    walls1 = {0:2,1:1,2:1,3:1}
-    walls2 = {0:1,1:1,2:1,3:1}
+    walls1 = {0:2,1:1,2:1,3:1, 4:1}
+    walls2 = {0:1,1:1,2:1,3:1, 4:1}
     print(gamou.initWallsList("zozo", walls1))
+    print(gamou.initWallsList("zinzin", walls2))
     gamou.placerMur(EnumWall.classic,(1,1),EnumOrientation.droite,"zozo")
     gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
-    gamou.placerMur(EnumWall.classic,(5,1),EnumOrientation.droite,"zozo")
+    # gamou.placerMur(EnumWall.classic,(5,1),EnumOrientation.droite,"zozo")
 
 
     # gamou.initWallsList("zinzin", walls2)
-    print(gamou.getBoardState())
+    print(gamou.getBoardState("zinzin"))
 
+    # gamou.getCaseReachable((4,4))
+    gamou.getCaseReachable((8,8))
+    # gamou.getCaseReachable((16,16))

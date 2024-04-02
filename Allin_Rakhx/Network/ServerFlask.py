@@ -4,12 +4,11 @@ from threading import Thread
 from flask import Flask, request
 from flask_restful import reqparse
 
+from Allin_Rakhx.Model.Config import viewGui, debug, debugWall
+from Allin_Rakhx.Model.Game.EnumCase import EnumPlayer, EnumWall, EnumOrientation
+from Allin_Rakhx.Model.Game.Game import Game
 
-from src.Allin_Rakhx.Model.Config import viewGui, debug
-from src.Allin_Rakhx.Model.Game.EnumCase import EnumPlayer
-from src.Allin_Rakhx.Model.Game.Game import Game
-
-from src.Allin_Rakhx.Vue.ThreaderView import ThreadedView
+from Allin_Rakhx.Vue.ThreaderView import ThreadedView
 
 def display_labyrinth(var):
     view = ThreadedView()
@@ -39,8 +38,8 @@ def modifyValue(representation):
         global land
         land[0] = representation
 def seeValue():
-     with data_lock:
-         print(land[0])
+    with data_lock:
+        print(land[0])
 
 def convertToString(value):
     return [tuple(str(x) for x in value)]
@@ -102,7 +101,13 @@ def registerWalls():
 @app.route('/loop/move', methods=['GET'])
 def deplacementUnite():
     param = request.args.to_dict()
-    return moteur.deplacementUnite(param["team"], (int(param["posX"]), int(param["posY"])))
+    resultat = moteur.deplacementUnite(param["team"], int(param["posX"]), int(param["posY"]))
+    if debugWall:
+        print(classTag(), " deplacementUnite result :  ", resultat)
+    if isinstance(resultat,str):
+        return resultat
+    if isinstance(resultat,tuple):
+        return convertToString(resultat)
 
 # Placement d'un mur donné pour une team donné
 # team, typeMur ,posX, posY, orientation
@@ -110,13 +115,17 @@ def deplacementUnite():
 def placerMur():
     param = request.args.to_dict()
     team = param["team"]
-    mur = param["typeMur"]
-    pos = (param["posX"], param["posY"])
-    orientation = param["orientation"]
-
+    mur = EnumWall(int(param["typeMur"]))
+    pos = (int(param["posX"]), int(param["posY"]))
+    orientation = EnumOrientation(int(param["orientation"]))
+    if(debugWall):
+        print("[ServerFlask]-PlacerMur, parametres: team ", team, " typeMur ", mur, " pos " ,pos, " - ", orientation)
     retour = moteur.placerMur(mur, pos, orientation, team)
+    if(debugWall):
+        print(classTag(), "PlacerMur et a comme retour ", retour)
 
-    return retour
+
+    return convertToString(retour)
 
 
 # Utilisation du pouvoir pour un joueur donnée
@@ -125,7 +134,7 @@ def placerMur():
 def usePower():
     param = request.args.to_dict()
     team = param["team"]
-    pos = (param["posX"], param["posY"])
+    pos = (int(param["posX"]), int(param["posY"]))
 
 
 # --------------------------------------
@@ -138,12 +147,10 @@ def getPriority():
     teamWithPrio = param["team"]
     if debug :
         print("equipe " + param["team"] + " prend la priorite")
-    # TODO checker ici
-    representation = moteur.getBoardState()
+    representation = moteur.getBoardState(teamWithPrio)
     modifyValue(representation)
     seeValue()
-    # Reload des pouvoirs
-    return representation
+    return (representation)
 
 @app.route('/loop/releasePrio')
 def releasePriority():
@@ -156,3 +163,6 @@ def releasePriority():
         return "Release quelque chose de déjà release"
 
 # endregion
+
+def classTag():
+    return "[ServerFlask]- "

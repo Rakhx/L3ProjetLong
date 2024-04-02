@@ -26,11 +26,11 @@ class EnumCase(Enum):
 
     def __repr__(self):
         if self.name == EnumCase.pionVide.name:
-            return '▭'
+            return '▭' # "pv"
         if self.name == EnumCase.murVide.name:
-            return '▣'
+            return '▣' # "mv"
         if self.name == EnumCase.caseUseless.name:
-            return '▬'
+            return '▬' # "cu"
         if self.name == EnumCase.pionJ1.name:
             return 'p1'
         if self.name == EnumCase.pionJ2.name:
@@ -76,6 +76,7 @@ class EnumWall(Enum):
     solid = 1
     long = 2
     door = 3
+    temp = 4
 
 class EnumTypeCase(Enum):
     forSpawn = auto()
