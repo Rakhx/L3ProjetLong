@@ -92,7 +92,7 @@ class Game :
                 return "Not moved, case pas atteignable pour l'unité"
 
 
-            self.__plateau.moveItem(pion, oldPosition, newPosition )
+            self.__plateau.moveItem(pion, oldPosition, newPosition)
             player.moveSpawn(newPosition)
         except CaseOccupedException :
             return "Except: DeplacementUnite- Not Moved, already occuped"
@@ -141,8 +141,8 @@ class Game :
 
     def getCaseReachable(self, posDepart, enumPowerType = None):
         possibilite = set()
-        self.__plateau.getCasesReachable(possibilite, posDepart, 1)
-        print(possibilite)
+        self.__plateau.getCasesReachable(possibilite, posDepart, 1, enumPowerType)
+        return (possibilite)
 
     # endregion
 if __name__ == '__main__' :
@@ -163,11 +163,14 @@ if __name__ == '__main__' :
     gamou.placerMur(EnumWall.classic,(1,1),EnumOrientation.droite,"zozo")
     gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
     # gamou.placerMur(EnumWall.classic,(5,1),EnumOrientation.droite,"zozo")
+    gamou.placerMur(EnumWall.long,(15,7),EnumOrientation.droite,"zozo")
 
 
     # gamou.initWallsList("zinzin", walls2)
     print(gamou.getBoardState("zinzin"))
 
     # gamou.getCaseReachable((4,4))
-    gamou.getCaseReachable((8,8))
+    print("case accessible sans pouvoir", gamou.getCaseReachable((16,8)))
+    print("case accessible avec pouvoir", gamou.getCaseReachable((16,8), EnumPion.jumper))
+
     # gamou.getCaseReachable((16,16))

@@ -9,7 +9,7 @@ class Wall(Item, abc.ABC):
         # taille de base
         self.taille = taille
         self.owner = owner
-        self.number = 1 if owner == EnumPlayer.joueur1 else 2
+        self.number = 1 if owner.player == EnumPlayer.joueur1 else 2
 
 class WallClassic(Wall):
     def __init__(self, positions, owner):

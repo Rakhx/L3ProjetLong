@@ -13,7 +13,6 @@ class Player:
         self.positionPion = pos
         self.spawn = Spawn(pos, enumJoueur, enumPion)
 
-
     def setWalls(self, murs):
         self.walls = murs
 
@@ -36,7 +35,6 @@ class Player:
     def beginTurn(self):
         self.spawn.reloadPower()
 
-
     # fonction qui met a jour le tps de reload des pouvoirs ainsi que les mur temporaire
     # utilise une instance d'un mur donné
     def isWallAvailable(self, enumWalLToCheck):
@@ -49,5 +47,3 @@ class Player:
             return True
         else :
             raise WallDisponibilityException("[Player.isWallAvailable]")
-
-

@@ -35,7 +35,6 @@ spawnOk = threading.Event()
 wallOk = threading.Event()
 
 
-
 land = ["--------------------\n->------------------\n->------------------\n"]
 T = Thread(target=display_labyrinth, args=(land,))
 if(viewGui):

@@ -11,7 +11,7 @@ team1 = "john"
 wallz1= {0:1,1:1,2:1,3:1,4:1}
 team2 = "Fanfan"
 wallz2= {0:1,1:0,2:2,3:2,4:1}
-nbTour = 5
+nbTour = 2
 
 # Fonction appelée par deux threads
 def boucleJeuJ1():
@@ -41,7 +41,7 @@ def boucleJeuJ1():
         if i == 0 :
             if debugManuel:
                 print ("placement de mur en 15 9")
-            client1.placementMur(EnumWall.temp.value, 15,9, EnumOrientation.gauche.value)
+            client1.placementMur(EnumWall.temp.value, 7,9, EnumOrientation.gauche.value)
 
         elif i == 1:
             if debugManuel:
