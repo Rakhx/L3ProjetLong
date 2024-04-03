@@ -8,7 +8,8 @@ debug = True
 
 debugWall = debug & True
 debugMvt = debug & False
-
+debugPower = debug & True
+debugManuel = debug & True
 
 
 posDepartJ1 = (0, taillePlateau - 1)

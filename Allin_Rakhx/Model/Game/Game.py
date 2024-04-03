@@ -34,7 +34,7 @@ class Game :
         self.kvPlayersByNum[self.numPlayer] = joueur
         # positionner le pion du joueur
         lePion = joueur.spawn
-        self.__plateau.putItem(lePion, lePion.position)
+        self.__plateau.putItem(lePion, lePion.positions)
         return ("joueur " + name + " enregistré avec un pion " + str(joueur.spawn) + " en joueur numero " + joueur.player.name)
 
     # Donne les murs choisit par le joueur
@@ -66,32 +66,40 @@ class Game :
             if key != playerName:
                 return value.walls.copy()
 
+    def askSpawnForTeam(self, playerName):
+        player = self.kvPlayersByName[playerName]
+        return player.spawn
+
     # endregion
 
     # --------------------------------------
     # region fonction de boucle
     # --------------------------------------
 
-    def deplacementUnite(self, team, posX, posY):
+    def deplacementUnite(self, team, posX, posY, enumPowerType = None):
         try :
+            deepth = 1
             player = self.kvPlayersByName[team]
             pion = player.spawn
             oldPosition = player.positionPion
             newPosition = (posX, posY)
             # Verification que le chemin existe depuis la position source
             setCases = set()
-            if not self.__plateau.getCasesReachable(setCases,oldPosition, 1) :
+            if enumPowerType == EnumPion.sprinter:
+                deepth = 2
+
+            if not self.__plateau.getCasesReachable(setCases,oldPosition, deepth, enumPowerType) :
                 return "Not moved, case pas atteignable pour l'unité"
 
 
             self.__plateau.moveItem(pion, oldPosition, newPosition )
             player.moveSpawn(newPosition)
         except CaseOccupedException :
-            return "Not Moved, already occuped"
+            return "Except: DeplacementUnite- Not Moved, already occuped"
         except CaseWrongTypeException :
-            return "Not Moved, destination n'a pas le bon type de case pour le mouvement"
+            return "Except: DeplacementUnite- Not Moved, destination n'a pas le bon type de case pour le mouvement"
         except Exception as e:
-            return "DeplacementUnit, autre type de probleme " + e.__str__()
+            return "Except: DeplacementUnite- autre type d'exception " + e.__str__()
 
         return newPosition
 
@@ -122,19 +130,18 @@ class Game :
         except WallIntersectionException:
             print("WallIntersectionException BEBE")
 
-
         print(self.classTag(), "suite au placement du mur" , player.walls)
         return "ok"
 
     def usePower(self, team, posX, posY):
-        None
+        return self.deplacementUnite(team, posX, posY, self.kvPlayersByName[team].spawn)
 
     def classTag(self):
         return "[Game]- "
 
-    def getCaseReachable(self, posDepart):
+    def getCaseReachable(self, posDepart, enumPowerType = None):
         possibilite = set()
-        self.__plateau.getCasesReachable(possibilite, posDepart, 2)
+        self.__plateau.getCasesReachable(possibilite, posDepart, 1)
         print(possibilite)
 
     # endregion
@@ -147,6 +154,12 @@ if __name__ == '__main__' :
     walls2 = {0:1,1:1,2:1,3:1, 4:1}
     print(gamou.initWallsList("zozo", walls1))
     print(gamou.initWallsList("zinzin", walls2))
+
+    # print(gamou.askSpawnTaken("zozo"))
+    # print(gamou.askSpawnTaken("zinzin"))
+    # print(gamou.askWallsTaken("zinzin"))
+    # print(gamou.askWallsTaken("zozo"))
+
     gamou.placerMur(EnumWall.classic,(1,1),EnumOrientation.droite,"zozo")
     gamou.placerMur(EnumWall.classic,(3,1),EnumOrientation.droite,"zozo")
     # gamou.placerMur(EnumWall.classic,(5,1),EnumOrientation.droite,"zozo")

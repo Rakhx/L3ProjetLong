@@ -1,10 +1,11 @@
 import json
+import threading
 from threading import Lock
 from threading import Thread
 from flask import Flask, request
 from flask_restful import reqparse
 
-from Allin_Rakhx.Model.Config import viewGui, debug, debugWall
+from Allin_Rakhx.Model.Config import viewGui, debug, debugWall, debugPower
 from Allin_Rakhx.Model.Game.EnumCase import EnumPlayer, EnumWall, EnumOrientation
 from Allin_Rakhx.Model.Game.Game import Game
 
@@ -12,9 +13,9 @@ from Allin_Rakhx.Vue.ThreaderView import ThreadedView
 
 def display_labyrinth(var):
     view = ThreadedView()
-    view.loop(data_lock, var)
+    view.loop(view_lock, var)
 
-data_lock = Lock()
+view_lock = Lock()
 
 # --------------------------------------
 #   Element autre de la classe
@@ -27,18 +28,26 @@ lock = Lock()
 parser = reqparse.RequestParser()
 parser.add_argument('list', type=list)
 
-land = ["--------------------\n->------------------\n->------------------\n"]
 teamWithPrio = EnumPlayer.joueur1
+initSpawn = 0
+initWall = 0
+spawnOk = threading.Event()
+wallOk = threading.Event()
+
+
+
+land = ["--------------------\n->------------------\n->------------------\n"]
 T = Thread(target=display_labyrinth, args=(land,))
 if(viewGui):
     T.start()
 
+
 def modifyValue(representation):
-    with data_lock:
+    with view_lock:
         global land
         land[0] = representation
 def seeValue():
-    with data_lock:
+    with view_lock:
         print(land[0])
 
 def convertToString(value):
@@ -53,6 +62,10 @@ def convertToString(value):
 def registerTeam():
     arg = request.args.to_dict()
     message = moteur.addPlayer(arg["team"],int(arg["pion"]))
+    global initSpawn
+    initSpawn += 1
+    if(initSpawn == 2) :
+        spawnOk.set()
     if debug :
         print("register Team ", arg["team"], "de type: " , arg["pion"], " avec un retour ", message)
     return message
@@ -60,24 +73,34 @@ def registerTeam():
 # Renvoi le choix de pion de l'adversaire
 @app.route("/init/askSpawnChoice", methods=['GET'])
 def askSpawnChoice():
-    arg = request.args.to_dict()
-    message = moteur.askSpawnTaken(arg["team"])
-    if debug:
-        print("ask Team ", arg["team"], " pour connaitre le pion en face", message)
-    return message
+    if spawnOk.isSet():
+        arg = request.args.to_dict()
+        message = moteur.askSpawnTaken(arg["team"])
+        if debug:
+            print("ask Team ", arg["team"], " pour connaitre le pion en face", message)
+        return str(message)
 
 # Renvoi le dictionnaire des choix de mur de l'adversaire
 @app.route("/init/askWallsChoice", methods=['GET'])
 def askWallsChoice():
-    arg = request.args.to_dict()
-    message = moteur.askWallsTaken(arg["team"])
-    if debug:
-        print("ask Team ", arg["team"], " pour connaitre les walls en face", message)
-    return message
+    if(wallOk.is_set()):
+        arg = request.args.to_dict()
+        message = moteur.askWallsTaken(arg["team"])
+        if debug:
+            print("ask Team ", arg["team"], " pour connaitre les walls en face", message)
+        resultat = {}
+        for walls, number in message.items():
+            resultat[walls.value] = number
+        return resultat
 
 # Register le nom de la team, ainsi que le type de pion choisi
 @app.route("/init/registerWalls", methods=['GET'])
 def registerWalls():
+    global initWall
+    initWall+= 1
+    if initWall == 2:
+        wallOk.set()
+
     arg = request.args.to_dict()
     player = arg["team"]
     wallz = json.loads(arg["walls"])
@@ -123,9 +146,7 @@ def placerMur():
     retour = moteur.placerMur(mur, pos, orientation, team)
     if(debugWall):
         print(classTag(), "PlacerMur et a comme retour ", retour)
-
-
-    return convertToString(retour)
+    return (retour)
 
 
 # Utilisation du pouvoir pour un joueur donnée
@@ -135,7 +156,11 @@ def usePower():
     param = request.args.to_dict()
     team = param["team"]
     pos = (int(param["posX"]), int(param["posY"]))
+    resultat = moteur.usePower(team, pos[0], pos[1])
+    if debugPower :
+        print(classTag(), "usePower et a comme retour ", resultat)
 
+    return resultat
 
 # --------------------------------------
 # region Mutex stuff

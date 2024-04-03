@@ -1,6 +1,6 @@
 from Allin_Rakhx.Exception.Exceptions import CaseOccupedException, CaseEmptyException, CaseWrongTypeException, \
     WallIntersectionException
-from Allin_Rakhx.Model.Game.EnumCase import EnumCase, EnumTypeCase, EnumWall, EnumOrientation
+from Allin_Rakhx.Model.Game.EnumCase import EnumCase, EnumTypeCase, EnumWall, EnumOrientation, EnumPion
 import Allin_Rakhx.Model.Config as cg
 from Allin_Rakhx.Model.Game.items.Wall import WallDoor, WallSolid, WallClassic, WallLong, Wall, WallTemp
 
@@ -128,21 +128,33 @@ class Plateau:
         # Nécessaire?
         del mur
 
-    def getCasesReachable(self, listeResultat, posDepart, deepth):
+    # listeResultat = set qui contiendra les cases atteignables
+    # posDepart = coordonnée d'une case autour de laquelle regarder
+    # profondeur ( 2 = sprinter )
+    # Si un pouvoir est utilisé
+    def getCasesReachable(self, listeResultat, posDepart, deepth, EnumPowerType=None):
         if(deepth > 0):
             posX = posDepart[0]
             posY = posDepart[1]
             for i in range(-1, 2):
                 for j in range(-1, 2):
+                    passeDroit = False
                     # Inclu les cas l'un forcement égal a 0, exclu les deux égaux à 0
                     if (i * j == 0) & (i != j):
                         posWall = (posX + i, posY + j)
-
+                        # si le mur est sur le chemin, ca dépend de si on a utiliser un pouvoir
+                        if posWall in self.kvPosItem and (EnumPowerType == EnumPion.jumper or EnumPowerType == EnumPion.sappeur) :
+                            wall = self.kvPosItem[posWall]
+                            if wall != EnumWall.solid :
+                                # s'il on est sappeur, on le casse
+                                self.removeWall(wall.positions)
+                                # si on est jumper, on se préparer a sauter
+                                passeDroit = True
                         # on vérifie qu'il n'y a pas de mur sur le chemin
-                        if posWall not in self.kvPosItem :
+                        if posWall not in self.kvPosItem or passeDroit:
                             posCase = (posX + 2*i, posY + 2*j)
                             # Si il y a le pion adverse en face, on appelle récursivement cette fonction
-                            if ( posCase in self.kvPosItem):
+                            if (posCase in self.kvPosItem):
                                 # Faire l'appel récursif
                                 None
                                 self.getCasesReachable(listeResultat, posCase, deepth - 1)
@@ -151,7 +163,7 @@ class Plateau:
                                 # break ?
                             # dans le cas ou la case suivante est dispo, on l'ajoute aux cases ou on peut aller,
                             # et qu'on ne sort pas du cadre
-                            elif  ( 0 <= posCase[0] <=cg.taillePlateau*2 - 1) &  ( 0 <= posCase[1] <=cg.taillePlateau*2 - 1):
+                            elif  ( 0 <= posCase[0] <=cg.taillePlateau*2 - 1) & ( 0 <= posCase[1] <=cg.taillePlateau*2 - 1):
                                     listeResultat.add(posCase)
                                     self.getCasesReachable(listeResultat,posCase,deepth-1)
 

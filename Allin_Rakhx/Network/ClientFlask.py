@@ -47,12 +47,11 @@ class Client:
 
    # demande quel mur a été choisi
     def askOtherWalls(self):
-        r = requests.get(adresseServeur+"/loop/askWallsChoice?team=" + self._name)
-        received = json.loads(r.text)
-        hum = tuple(i for i in received)
+        r = requests.get(adresseServeur+"/init/askWallsChoice?team=" + self._name)
+
         if cf.debug :
-            print("demande des autres murs", hum)
-        return hum
+            print("demande des autres murs", r.text)
+        return r.text
 
     # endregion
 
@@ -100,6 +99,10 @@ class Client:
         position = (positionX, positionY)
         r = requests.get(adresseServeur+"/loop/placeWalls?team=" + self._name + "&typeMur=" + str(typeMur)
                          + self.posString(position)+"&orientation=" + str(orientation))
+        if(debugWall):
+            print(r.text)
+
+        return r.text
 
     # utilisation du pouvoir de l'unité
     # Sauter par dessus
