@@ -10,10 +10,12 @@ from Allin_Rakhx.Model.Game.EnumCase import EnumPlayer, EnumWall, EnumOrientatio
 from Allin_Rakhx.Model.Game.Game import Game
 
 from Allin_Rakhx.Vue.ThreaderView import ThreadedView
+from Allin_Rakhx.Vue.ThreaderViewTT import ThreadedViewTT
+
 
 def display_labyrinth(var):
-    view = ThreadedView()
-    view.loop(view_lock, var)
+    view2 = ThreadedViewTT()
+    view2.loop(view_lock, var)
 
 view_lock = Lock()
 
@@ -35,7 +37,7 @@ spawnOk = threading.Event()
 wallOk = threading.Event()
 
 
-land = ["--------------------\n->------------------\n->------------------\n"]
+land = [""]
 T = Thread(target=display_labyrinth, args=(land,))
 if(viewGui):
     T.start()

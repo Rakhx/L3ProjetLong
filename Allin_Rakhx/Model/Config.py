@@ -3,7 +3,7 @@ from Allin_Rakhx.Model.Game.EnumCase import *
 
 # Taille du plateau en nombre de case
 taillePlateau = 9
-viewGui = False
+viewGui = True
 debug = True
 
 debugWall = debug & True

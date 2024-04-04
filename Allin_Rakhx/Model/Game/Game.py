@@ -76,28 +76,15 @@ class Game :
     # region fonction de boucle
     # --------------------------------------
 
-    def deplacementUnite(self, team, posX, posY, enumPowerType = None):
+    def deplacementUnite(self, team, posX, posY):
         try :
-            deepth = 1
             player = self.kvPlayersByName[team]
             pion = player.spawn
             oldPosition = player.positionPion
             newPosition = (posX, posY)
-            # Verification que le chemin existe depuis la position source
-            setCases = set()
-            if enumPowerType == EnumPion.sprinter:
-                deepth = 2
-
-            if not self.__plateau.getCasesReachable(setCases,oldPosition, deepth, enumPowerType) :
-                return "Not moved, case pas atteignable pour l'unité"
-
 
             self.__plateau.moveItem(pion, oldPosition, newPosition)
             player.moveSpawn(newPosition)
-        except CaseOccupedException :
-            return "Except: DeplacementUnite- Not Moved, already occuped"
-        except CaseWrongTypeException :
-            return "Except: DeplacementUnite- Not Moved, destination n'a pas le bon type de case pour le mouvement"
         except Exception as e:
             return "Except: DeplacementUnite- autre type d'exception " + e.__str__()
 
@@ -110,6 +97,7 @@ class Game :
 
             # Mur dispo ?
             player.isWallAvailable(mur)
+
             # Case du bon type pour mettre un mur ?
             if not isCaseForType(EnumTypeCase.forNothing,pos):
                 raise CaseWrongTypeException("[Game.placerMur]")
