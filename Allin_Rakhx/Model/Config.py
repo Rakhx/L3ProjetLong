@@ -36,4 +36,4 @@ kvPionEtReload = {EnumPion.sappeur:4, EnumPion.jumper:4, EnumPion.sprinter:4}
 
 releaseMode = False
 
-adresseServeur = "http://Rakhx.pythonanywhere.com/" if releaseMode else "http://127.0.0.1:5000"
+adresseServeur = "http://10.2.74.16:5000" if releaseMode else "http://127.0.0.1:5000"
